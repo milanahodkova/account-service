@@ -2,8 +2,8 @@ package org.project.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.project.dto.UserRequest;
-import org.project.dto.UserResponse;
+import org.project.dto.request.UserRequest;
+import org.project.dto.response.UserResponse;
 import org.project.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

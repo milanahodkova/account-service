@@ -2,6 +2,7 @@ package org.project.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.project.model.enums.DocumentType;
 
 import java.util.UUID;
 

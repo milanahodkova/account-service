@@ -1,4 +1,4 @@
-package org.project.dto;
+package org.project.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,8 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.model.DocumentType;
-import static org.project.util.Constant.*;
+import org.project.model.enums.DocumentType;
 
 
 @Getter
@@ -16,13 +15,16 @@ import static org.project.util.Constant.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    @NotBlank(message = NAME_NOT_BLANK_MESSAGE)
+
+    private static final String DOCNUMBER_REGEX = "^[A-Za-z0-9]+$";
+
+    @NotBlank(message = "${name.notBlankMessage}")
     private String name;
 
-    @NotNull(message = DOCTYPE_NOT_NULL_MESSAGE)
+    @NotNull(message = "${docType.notNullMessage}")
     private DocumentType docType;
 
-    @NotBlank(message = DOCNUMBER_NOT_BLANK_MESSAGE)
-    @Pattern(regexp = DOCNUMBER_REGEX, message = DOCNUMBER_PATTERN_MESSAGE)
+    @NotBlank(message = "${docNumber.notBlankMessage}")
+    @Pattern(regexp = DOCNUMBER_REGEX, message = "${docNumber.patternMessage}")
     private String docNumber;
 }

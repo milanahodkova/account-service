@@ -1,7 +1,7 @@
 package org.project.service;
 
-import org.project.dto.UserRequest;
-import org.project.dto.UserResponse;
+import org.project.dto.request.UserRequest;
+import org.project.dto.response.UserResponse;
 
 import java.util.UUID;
 

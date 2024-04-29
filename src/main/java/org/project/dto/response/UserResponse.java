@@ -1,7 +1,7 @@
-package org.project.dto;
+package org.project.dto.response;
 
 import lombok.*;
-import org.project.model.DocumentType;
+import org.project.model.enums.DocumentType;
 
 import java.util.UUID;
 

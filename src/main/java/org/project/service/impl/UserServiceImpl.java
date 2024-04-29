@@ -2,10 +2,10 @@ package org.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.project.dto.UserRequest;
-import org.project.dto.UserResponse;
-import org.project.exception.EntityAlreadyExistsException;
-import org.project.exception.EntityNotFoundException;
+import org.project.dto.request.UserRequest;
+import org.project.dto.response.UserResponse;
+import org.project.exception.AlreadyExistsException;
+import org.project.exception.NotFoundException;
 import org.project.model.UserEntity;
 import org.project.repository.UserRepository;
 import org.project.service.UserService;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse create(UserRequest userRequest) {
         if (userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(),
                 userRequest.getDocNumber())) {
-            throw new EntityAlreadyExistsException("User is already exists");
+            throw new AlreadyExistsException("User is already exists");
         }
         UserEntity userEntity = convertToEntity(userRequest);
         userRepository.save(userEntity);
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity findByIdOrThrow(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User  wasn't found"));
+                .orElseThrow(() -> new NotFoundException("User  wasn't found"));
     }
 
     private UserEntity convertToEntity(UserRequest user) {
