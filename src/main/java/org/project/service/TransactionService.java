@@ -1,8 +1,8 @@
 package org.project.service;
 
-import org.project.dto.TransactionListResponse;
-import org.project.dto.TransactionRequest;
-import org.project.dto.TransactionResponse;
+import org.project.dto.response.TransactionListResponse;
+import org.project.dto.request.TransactionRequest;
+import org.project.dto.response.TransactionResponse;
 
 import java.util.UUID;
 

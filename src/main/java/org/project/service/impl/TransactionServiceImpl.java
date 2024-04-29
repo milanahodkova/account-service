@@ -2,10 +2,10 @@ package org.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.project.dto.TransactionListResponse;
-import org.project.dto.TransactionRequest;
-import org.project.dto.TransactionResponse;
-import org.project.exception.EntityNotFoundException;
+import org.project.dto.response.TransactionListResponse;
+import org.project.dto.request.TransactionRequest;
+import org.project.dto.response.TransactionResponse;
+import org.project.exception.NotFoundException;
 import org.project.model.TransactionEntity;
 import org.project.repository.TransactionRepository;
 import org.project.service.TransactionService;
@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse getTransactionById(UUID transactionId) {
         TransactionEntity transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
+                .orElseThrow(() -> new NotFoundException("Transaction not found"));
         return convertToDto(transaction);
     }
 

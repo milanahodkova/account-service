@@ -1,21 +1,21 @@
-package org.project.dto;
+package org.project.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.project.model.TransactionType;
+import lombok.*;
+import org.project.model.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionRequest {
-    private UUID accountId;
+@ToString
+public class TransactionResponse {
+    private UUID id;
+    private AccountResponse account;
     private BigDecimal amount;
     private LocalDateTime timestamp;
     private TransactionType transactionType;

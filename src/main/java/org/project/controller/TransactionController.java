@@ -2,9 +2,9 @@ package org.project.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.project.dto.TransactionListResponse;
-import org.project.dto.TransactionRequest;
-import org.project.dto.TransactionResponse;
+import org.project.dto.response.TransactionListResponse;
+import org.project.dto.request.TransactionRequest;
+import org.project.dto.response.TransactionResponse;
 import org.project.service.TransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping("/account/{accountId}")
     public ResponseEntity<TransactionListResponse> getAccountTransactions(@PathVariable("accountId") UUID accountId) {
         return new ResponseEntity<>(transactionService.getAccountTransactions(accountId), HttpStatus.OK);
     }

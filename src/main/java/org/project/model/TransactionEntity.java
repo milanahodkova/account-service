@@ -3,6 +3,7 @@ package org.project.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.project.model.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
