@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accounts-table
+      author: milana
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: decimal(10, 2)
+              - column:
+                  name: currency
+                  type: varchar(10)
+            foreignKeyConstraints:
+              - foreignKeyConstraint:
+                  baseTableName: accounts
+                  baseColumnNames: user_id
+                  referencedTableName: users
+                  referencedColumnNames: id

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-users-table
+      author: milana
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: doc_type
+                  type: varchar(50)
+              - column:
+                  name: doc_num
+                  type: varchar(20)

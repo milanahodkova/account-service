@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+
+  account_service_db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=account_service_db
+      - POSTGRES_USER=postgres
+      - PGDATA=/data/postgres
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    networks:
+      - service_ntwrk
+
+  pgadmin:
+    build: pgadmin
+    image: pgadmin:1.0.0
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: a@mail.com
+      PGADMIN_DEFAULT_PASSWORD: 1122
+    ports:
+      - "82:80"
+    networks:
+      - service_ntwrk
+
+  service:
+    build: service
+    image: service:1.0.0
+    depends_on:
+      - account_service_db
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://account_service_db:5432/account_service_db
+    networks:
+      - service_ntwrk
+
+networks:
+  service_ntwrk:
+    name: service_ntwrk
