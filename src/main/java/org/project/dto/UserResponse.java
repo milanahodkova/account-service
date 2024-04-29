@@ -1,8 +1,7 @@
 package org.project.dto;
 
-import jakarta.persistence.Table;
 import lombok.*;
-import org.project.model.Document;
+import org.project.model.DocumentType;
 
 import java.util.UUID;
 
@@ -13,8 +12,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 public class UserResponse {
-    private UUID uuid;
+    private UUID id;
     private String name;
-    private Document document;
+    private DocumentType docType;
+    private String docNumber;
 }
 

@@ -1,5 +1,6 @@
 package org.project.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.project.dto.UserRequest;
 import org.project.dto.UserResponse;
@@ -22,20 +23,18 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {
-        userService.create(userRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(userService.create(userRequest),HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{uuid}")
-    public ResponseEntity<?> updateUser(@PathVariable UUID uuid, @RequestBody UserRequest userRequest) {
-        userService.update(uuid, userRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID uuid, @Valid @RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(userService.update(uuid, userRequest),HttpStatus.OK);
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> deleteUser(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID uuid) {
         userService.delete(uuid);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -8,9 +8,9 @@ import java.util.UUID;
 public interface UserService {
     UserResponse getInfo(UUID uuid);
 
-    void create(UserRequest userRequest);
+    UserResponse create(UserRequest userRequest);
 
-    void update(UUID uuid, UserRequest userRequest);
+    UserResponse update(UUID uuid, UserRequest userRequest);
 
     void delete(UUID uuid);
 }

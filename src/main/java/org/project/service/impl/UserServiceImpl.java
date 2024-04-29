@@ -18,39 +18,45 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+
     @Override
-    public UserResponse getInfo(UUID uuid) {
-      UserEntity user = userRepository.findByUuid(uuid)
-              .orElseThrow(() -> new EntityNotFoundException("User not found"));
-      return convertToDto(user);
+    public UserResponse getInfo(UUID id) {
+        UserEntity user = findByIdOrThrow(id);
+        return convertToDto(user);
     }
 
     @Override
-    public void create(UserRequest userRequest) {
-        UserEntity userEntity = convertToEntity(userRequest);
-        if (userRepository.existsByDocument(userRequest.getDocument())) {
-            throw new EntityAlreadyExistsException("User already exists");
+    public UserResponse create(UserRequest userRequest) {
+        if (userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(),
+                userRequest.getDocNumber())) {
+            throw new EntityAlreadyExistsException("User is already exists");
         }
+        UserEntity userEntity = convertToEntity(userRequest);
         userRepository.save(userEntity);
+        return convertToDto(userEntity);
     }
 
     @Override
-    public void update(UUID uuid, UserRequest userRequest) {
-        UserEntity user = userRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public UserResponse update(UUID id, UserRequest userRequest) {
+        UserEntity user = findByIdOrThrow(id);
 
         user.setName(userRequest.getName());
-        user.setDocument(userRequest.getDocument());
+        user.setDocType(userRequest.getDocType());
+        user.setDocNumber(userRequest.getDocNumber());
 
         userRepository.save(user);
+        return convertToDto(user);
     }
 
     @Override
-    public void delete(UUID uuid) {
-        UserEntity user = userRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException());
-
+    public void delete(UUID id) {
+        UserEntity user = findByIdOrThrow(id);
         userRepository.delete(user);
+    }
+
+    private UserEntity findByIdOrThrow(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User  wasn't found"));
     }
 
     private UserEntity convertToEntity(UserRequest user) {

@@ -7,15 +7,21 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID uuid;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    @Column(name = "name")
     private String name;
-    @Embedded
-    private Document document;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "doc_type")
+    private DocumentType docType;
+    @Column(name = "doc_num")
+    private String docNumber;
 }
