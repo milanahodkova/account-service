@@ -13,7 +13,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class TransactionResponse {
     @Schema(description = "Идентификатор транзакции")
     private UUID id;
