@@ -47,13 +47,4 @@ public class TransactionController {
         return new ResponseEntity<>(transactionService.getAccountTransactions(accountId), HttpStatus.OK);
     }
 
-    @PostMapping
-    @Operation(
-            summary = "Создать транзакцию",
-            description = "Создать новую транзакцию."
-    )
-    public ResponseEntity<TransactionResponse> createTransaction(
-            @Valid @RequestBody @Parameter(description = "Запрос на создание транзакции") TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(transactionService.createTransaction(transactionRequest), HttpStatus.CREATED);
-    }
 }
