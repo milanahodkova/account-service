@@ -10,6 +10,7 @@ import org.project.model.UserEntity;
 import org.project.repository.UserRepository;
 import org.project.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse create(UserRequest userRequest) {
         if (userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(),
                 userRequest.getDocNumber())) {
@@ -37,6 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse update(UUID id, UserRequest userRequest) {
         UserEntity user = findByIdOrThrow(id);
 
@@ -49,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         UserEntity user = findByIdOrThrow(id);
         userRepository.delete(user);
