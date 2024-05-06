@@ -22,29 +22,23 @@ import java.util.UUID;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @GetMapping("/{transactionId}")
     @Operation(
             summary = "Получить транзакцию по идентификатору",
             description = "Получить информацию о транзакции по ее идентификатору."
     )
-    public ResponseEntity<TransactionResponse> getTransactionById(
+    @GetMapping("/{transactionId}")
+    public TransactionResponse getTransactionById(
             @PathVariable("transactionId") @Parameter(description = "Идентификатор транзакции") UUID transactionId) {
-        TransactionResponse transactionResponse = transactionService.getTransactionById(transactionId);
-        if (transactionResponse != null) {
-            return ResponseEntity.ok(transactionResponse);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return transactionService.getTransactionById(transactionId);
     }
 
-    @GetMapping("/account/{accountId}")
     @Operation(
             summary = "Получить транзакции по идентификатору счета",
             description = "Получить список транзакций для конкретного счета."
     )
-    public ResponseEntity<TransactionListResponse> getAccountTransactions(
+    @GetMapping("/account/{accountId}")
+    public TransactionListResponse getAccountTransactions(
             @PathVariable("accountId") @Parameter(description = "Идентификатор счета") UUID accountId) {
-        return new ResponseEntity<>(transactionService.getAccountTransactions(accountId), HttpStatus.OK);
+        return transactionService.getAccountTransactions(accountId);
     }
-
 }

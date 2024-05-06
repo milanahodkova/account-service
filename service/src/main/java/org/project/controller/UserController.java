@@ -9,7 +9,6 @@ import org.project.dto.request.UserRequest;
 import org.project.dto.response.UserResponse;
 import org.project.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,38 +20,40 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/{uuid}")
     @Operation(summary = "Получение данных пользователя",
             description = "Извлекает информацию о пользователе по его уникальному идентификатору")
-    public ResponseEntity<UserResponse> getUser(@PathVariable UUID uuid) {
-        return new ResponseEntity<>(userService.getInfo(uuid), HttpStatus.OK);
+    @GetMapping("/{uuid}")
+    public UserResponse getUser(@PathVariable UUID uuid) {
+        return userService.getInfo(uuid);
     }
 
-    @PostMapping
     @Operation(summary = "Создание нового пользователя",
             description = "Регистрирует нового пользователя в системе и возвращает его данные")
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody @Parameter(description = "Данные пользователя")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse createUser(@Valid @RequestBody @Parameter(description = "Данные пользователя")
                                                        UserRequest userRequest) {
-        return new ResponseEntity<>(userService.create(userRequest),HttpStatus.CREATED);
+        return userService.create(userRequest);
     }
 
-    @PutMapping("/{uuid}")
     @Operation(summary = "Обновление данных пользователя",
             description = "Обновляет информацию о пользователе с заданным идентификатором")
-    public ResponseEntity<UserResponse> updateUser(
+    @PutMapping("/{uuid}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse updateUser(
             @PathVariable @Parameter(description = "Идентификатор пользователя") UUID uuid,
             @Valid @RequestBody @Parameter(description = "Данные пользователя") UserRequest userRequest
     ) {
-        return new ResponseEntity<>(userService.update(uuid, userRequest), HttpStatus.OK);
+        return userService.update(uuid, userRequest);
     }
 
-    @DeleteMapping("/{uuid}")
     @Operation(summary = "Удаление пользователя",
             description = "Удаляет пользователя из системы по его уникальному идентификатору")
-    public ResponseEntity<Void> deleteUser(
+    @DeleteMapping("/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(
             @PathVariable @Parameter(description = "Идентификатор пользователя") UUID uuid
     ) {
         userService.delete(uuid);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

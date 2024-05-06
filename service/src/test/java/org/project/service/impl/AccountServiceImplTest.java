@@ -335,9 +335,9 @@ public class AccountServiceImplTest {
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         doNothing().when(accountRepository).deleteById(accountId);
 
-        boolean result = accountService.closeAccount(accountId);
+        accountService.closeAccount(accountId);
 
-        assertTrue(result);
+        verify(accountRepository).delete(accountEntity);
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, times(1)).deleteById(accountId);
     }

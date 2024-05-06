@@ -21,7 +21,7 @@ public interface AccountService {
 
     AccountResponse transfer(UUID accountIdTo, TransactionRequest transactionRequest);
 
-    boolean closeAccount(UUID accountId);
+    void closeAccount(UUID accountId);
 }
 
 

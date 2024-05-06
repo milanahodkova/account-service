@@ -23,58 +23,58 @@ import java.util.UUID;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping(path = "/user/{userId}")
     @Operation(summary = "Получить счета пользователя", description = "Получить список счетов для конкретного пользователя.")
-    public ResponseEntity<AccountListResponse> getUserAccounts(
+    @GetMapping(path = "/user/{userId}")
+    public AccountListResponse getUserAccounts(
             @PathVariable @Parameter(description = "Идентификатор пользователя") UUID userId) {
-        return new ResponseEntity<>(accountService.getUserAccounts(userId), HttpStatus.OK);
+        return accountService.getUserAccounts(userId);
     }
 
-    @GetMapping("/{accountId}")
     @Operation(summary = "Получить счет по идентификатору", description = "Получить счет по его идентификатору.")
-    public ResponseEntity<AccountResponse> getAccountById(
+    @GetMapping("/{accountId}")
+    public AccountResponse getAccountById(
             @PathVariable @Parameter(description = "Идентификатор счета") UUID accountId) {
-        return new ResponseEntity<>(accountService.getAccountById(accountId), HttpStatus.OK);
+        return accountService.getAccountById(accountId);
     }
 
-    @PostMapping()
     @Operation(summary = "Создать счет", description = "Создать новый счет.")
-    public ResponseEntity<AccountResponse> createAccount(
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponse createAccount(
             @Valid @RequestBody @Parameter(description = "Запрос на создание счета") AccountRequest accountRequest) {
-        return new ResponseEntity<>(accountService.createAccount(accountRequest), HttpStatus.CREATED);
+        return accountService.createAccount(accountRequest);
     }
 
-    @PutMapping("/deposit")
     @Operation(summary = "Пополнить счет", description = "Пополнить счет.")
-    public ResponseEntity<AccountResponse> deposit(
+    @PutMapping("/deposit")
+    @ResponseStatus(HttpStatus.OK)
+    public AccountResponse deposit(
             @Valid @RequestBody @Parameter(description = "Данные о транзакции") TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(accountService.deposit(transactionRequest), HttpStatus.OK);
+        return accountService.deposit(transactionRequest);
     }
 
-    @PutMapping("/withdraw")
     @Operation(summary = "Снять деньги со счета", description = "Снять деньги со счета.")
-    public ResponseEntity<AccountResponse> withdraw(
+    @PutMapping("/withdraw")
+    @ResponseStatus(HttpStatus.OK)
+    public AccountResponse withdraw(
             @Valid @RequestBody @Parameter(description = "Данные о транзакции") TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(accountService.withdraw(transactionRequest), HttpStatus.OK);
+        return accountService.withdraw(transactionRequest);
     }
 
-    @PutMapping("/transfer/{accountIdTo}")
     @Operation(summary = "Перевести средства на другой счет", description = "Перевести средства на другой счет.")
-    public ResponseEntity<AccountResponse> transfer(
+    @PutMapping("/transfer/{accountIdTo}")
+    @ResponseStatus(HttpStatus.OK)
+    public AccountResponse transfer(
             @PathVariable @Parameter(description = "Идентификатор счета-получателя") UUID accountIdTo,
             @Valid @RequestBody @Parameter(description = "Данные о транзакции") TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(accountService.transfer(accountIdTo, transactionRequest), HttpStatus.OK);
+        return accountService.transfer(accountIdTo, transactionRequest);
     }
 
-    @DeleteMapping("/{accountId}")
     @Operation(summary = "Закрыть счет", description = "Закрыть счет.")
-    public ResponseEntity<Void> closeAccount(
+    @DeleteMapping("/{accountId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void closeAccount(
             @PathVariable @Parameter(description = "Идентификатор счета") UUID accountId) {
-        boolean success = accountService.closeAccount(accountId);
-        if (success) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        accountService.closeAccount(accountId);
     }
 }

@@ -145,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public boolean closeAccount(UUID accountId) {
+    public void closeAccount(UUID accountId) {
         AccountEntity account = findAccountByIdOrThrow(accountId);
         BigDecimal currentBalance = account.getBalance();
 
@@ -156,9 +156,7 @@ public class AccountServiceImpl implements AccountService {
                     currentBalance);
             transactionRepository.save(transaction);
         }
-
         accountRepository.deleteById(accountId);
-        return true;
     }
 
     private UserEntity getUserById(UUID userId) {
