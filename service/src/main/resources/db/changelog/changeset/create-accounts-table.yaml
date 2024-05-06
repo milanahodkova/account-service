@@ -17,15 +17,12 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: false
+                    foreignKeyName: accounts_user_id_fk
+                    referencedTableName: users
+                    referencedColumnNames: id
               - column:
                   name: balance
                   type: decimal(10, 2)
               - column:
                   name: currency
                   type: varchar(10)
-            foreignKeyConstraints:
-              - foreignKeyConstraint:
-                  baseTableName: accounts
-                  baseColumnNames: user_id
-                  referencedTableName: users
-                  referencedColumnNames: id

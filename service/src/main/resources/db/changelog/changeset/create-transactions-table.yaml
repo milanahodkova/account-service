@@ -17,6 +17,9 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: false
+                    foreignKeyName: accounts_account_id_fk
+                    referencedTableName: accounts
+                    referencedColumnNames: id
               - column:
                   name: amount
                   type: decimal(10, 2)
@@ -26,9 +29,3 @@ databaseChangeLog:
               - column:
                   name: transaction_type
                   type: varchar(50)
-            foreignKeyConstraints:
-              - foreignKeyConstraint:
-                  baseTableName: transactions
-                  baseColumnNames: account_id
-                  referencedTableName: accounts
-                  referencedColumnNames: id
