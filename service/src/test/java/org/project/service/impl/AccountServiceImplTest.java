@@ -1,11 +1,9 @@
 package org.project.service.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.project.dto.request.AccountRequest;
@@ -67,6 +65,7 @@ public class AccountServiceImplTest {
 
         verify(userRepository, times(1)).findById(userId);
         verify(accountRepository, times(1)).findAllByUser(userEntity);
+        verifyNoInteractions(transactionRepository);
     }
 
     @Test
@@ -78,6 +77,7 @@ public class AccountServiceImplTest {
 
         verify(userRepository, times(1)).findById(userId);
         verify(accountRepository, never()).findAllByUser(any());
+        verifyNoInteractions(transactionRepository);
     }
 
     @Test
@@ -94,6 +94,7 @@ public class AccountServiceImplTest {
         assertEquals(accountResponse, result);
 
         verify(accountRepository, times(1)).findById(accountId);
+        verifyNoInteractions(transactionRepository, userRepository);
     }
 
     @Test
@@ -104,6 +105,7 @@ public class AccountServiceImplTest {
         assertThrows(NotFoundException.class, () -> accountService.getAccountById(accountId));
 
         verify(accountRepository, times(1)).findById(accountId);
+        verifyNoInteractions(transactionRepository, userRepository);
     }
 
     @Test
@@ -161,6 +163,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).updateAccountBalance(accountId,
                 transactionRequest.getAmount().negate());
         verify(transactionRepository, times(1)).save(any(TransactionEntity.class));
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -174,6 +177,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).save(any(TransactionEntity.class));
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -194,6 +198,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).updateAccountBalance(accountId,
                 transactionRequest.getAmount());
         verify(transactionRepository, times(1)).save(any(TransactionEntity.class));
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -207,6 +212,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).save(any(TransactionEntity.class));
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -225,6 +231,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).save(any(TransactionEntity.class));
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -258,6 +265,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1))
                 .updateAccountBalance(accountIdTo, transactionRequest.getAmount().negate());
         verify(transactionRepository, times(1)).saveAll(anyList());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -273,6 +281,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, never()).findById(accountIdTo);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).saveAll(anyList());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -290,6 +299,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).findById(accountIdTo);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).saveAll(anyList());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -318,6 +328,7 @@ public class AccountServiceImplTest {
         verify(accountRepository, times(1)).findById(accountIdTo);
         verify(accountRepository, never()).updateAccountBalance(any(), any());
         verify(transactionRepository, never()).saveAll(anyList());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -331,6 +342,7 @@ public class AccountServiceImplTest {
         verify(accountRepository).deleteById(accountId);
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, times(1)).deleteById(accountId);
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -340,5 +352,6 @@ public class AccountServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> accountService.closeAccount(accountId));
         verify(accountRepository, times(1)).findById(accountId);
+        verifyNoInteractions(transactionRepository, userRepository);
     }
 }
