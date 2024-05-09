@@ -18,7 +18,7 @@ public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
     @Column(precision = 10, scale = 2)

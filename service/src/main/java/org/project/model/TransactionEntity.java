@@ -22,7 +22,7 @@ public class TransactionEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private AccountEntity account;
     @Column(name = "amount", precision = 10, scale = 2)
     private BigDecimal amount;
