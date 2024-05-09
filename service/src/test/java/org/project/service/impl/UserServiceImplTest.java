@@ -1,7 +1,5 @@
 package org.project.service.impl;
 
-import org.hibernate.validator.constraints.ModCheck;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,8 +11,8 @@ import org.project.dto.response.UserResponse;
 import org.project.exception.AlreadyExistsException;
 import org.project.exception.NotFoundException;
 import org.project.model.UserEntity;
-import org.project.model.enums.DocumentType;
 import org.project.repository.UserRepository;
+import org.project.util.DataUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -33,51 +31,25 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private UUID userId;
-    private UserEntity userEntity;
-    private UserRequest userRequest;
-    private UserResponse userResponse;
-
-    @BeforeEach
-    void setUp() {
-        this.userRequest = UserRequest.builder()
-                .name("Test User")
-                .docNumber("AB112233")
-                .docType(DocumentType.PASSPORT)
-                .build();
-
-        this.userId = UUID.randomUUID();
-
-        this.userEntity = UserEntity.builder()
-                .id(userId)
-                .name(userRequest.getName())
-                .docType(userRequest.getDocType())
-                .docNumber(userRequest.getDocNumber())
-                .build();
-
-        this.userResponse = UserResponse.builder()
-                .id(userId)
-                .name(userRequest.getName())
-                .docType(userRequest.getDocType())
-                .docNumber(userRequest.getDocNumber())
-                .build();
-    }
-
     @Test
     void getInfo_ShouldReturnUserInfo_WhenUserExists() {
-        when(modelMapper.map(userEntity, UserResponse.class)).thenReturn(userResponse);
+        UUID userId = DataUtils.getUserId();
+        UserEntity userEntity = DataUtils.getUserEntity();
+        UserResponse expectedResponse = DataUtils.getUserResponse();
+
+        when(modelMapper.map(userEntity, UserResponse.class)).thenReturn(expectedResponse);
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
 
         UserResponse result = userService.getInfo(userId);
 
         assertNotNull(result);
-        assertEquals(userResponse, result);
+        assertEquals(expectedResponse, result);
         verify(userRepository, times(1)).findById(userId);
-
     }
 
     @Test
     void getInfo_ShouldReturnUserInfo_WhenUserDoesNotExist() {
+        UUID userId = DataUtils.getUserId();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userService.getInfo(userId));
@@ -87,6 +59,9 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldCreateUser_WhenUserDoesNotExist() {
+        UserRequest userRequest = DataUtils.getUserRequest();
+        UserEntity userEntity = DataUtils.getUserEntity();
+        UserResponse userResponse = DataUtils.getUserResponse();
         when(userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber())).thenReturn(false);
         when(modelMapper.map(userRequest, UserEntity.class)).thenReturn(userEntity);
         when(userRepository.save(userEntity)).thenReturn(userEntity);
@@ -103,6 +78,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldThrowAlreadyExistsException_WhenUserExists() {
+        UserRequest userRequest = DataUtils.getUserRequest();
         when(userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(),
                 userRequest.getDocNumber())).thenReturn(true);
 
@@ -114,6 +90,10 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_ShouldUpdateUser_WhenUserExist() {
+        UserEntity userEntity = DataUtils.getUserEntity();
+        UUID userId = DataUtils.getUserId();
+        UserRequest userRequest = DataUtils.getUserRequest();
+        UserResponse userResponse = DataUtils.getUserResponse();
         when(modelMapper.map(userEntity, UserResponse.class)).thenReturn(userResponse);
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(userRepository.save(any())).thenReturn(userEntity);
@@ -129,6 +109,8 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_ShouldUpdateUser_WhenUserDoesNotExist() {
+        UUID userId = DataUtils.getUserId();
+        UserRequest userRequest = DataUtils.getUserRequest();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userService.update(userId, userRequest));
@@ -139,6 +121,8 @@ class UserServiceImplTest {
 
     @Test
     void deleteUser_ShouldDeleteUser_WhenUserExist() {
+        UUID userId = DataUtils.getUserId();
+        UserEntity userEntity = DataUtils.getUserEntity();
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
 
         userService.delete(userId);
@@ -151,6 +135,7 @@ class UserServiceImplTest {
 
     @Test
     void deleteUser_ShouldDeleteUser_WhenUserDoesNotExist() {
+        UUID userId = DataUtils.getUserId();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userService.delete(userId));
@@ -158,5 +143,4 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, never()).delete(any(UserEntity.class));
     }
-
 }
