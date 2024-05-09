@@ -1,10 +1,9 @@
 package org.project.service.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.project.dto.request.TransactionRequest;
@@ -13,8 +12,8 @@ import org.project.dto.response.TransactionResponse;
 import org.project.exception.NotFoundException;
 import org.project.model.TransactionEntity;
 import org.project.repository.TransactionRepository;
+import org.project.util.DataUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,37 +29,15 @@ public class TransactionServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @InjectMocks
     private TransactionServiceImpl transactionService;
 
-    private UUID transactionId;
-    private UUID accountId;
-    private TransactionRequest transactionRequest;
-    private TransactionResponse transactionResponse;
-    private TransactionEntity transactionEntity;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        transactionService = new TransactionServiceImpl(transactionRepository, modelMapper);
-
-        this.transactionId = UUID.randomUUID();
-        this.accountId = UUID.randomUUID();
-
-        this.transactionRequest = new TransactionRequest();
-        transactionRequest.setAccountId(accountId);
-        transactionRequest.setAmount(BigDecimal.valueOf(1000));
-
-        this.transactionResponse = new TransactionResponse();
-        transactionResponse.setId(transactionId);
-        transactionResponse.setAmount(BigDecimal.valueOf(1000));
-
-        this.transactionEntity = new TransactionEntity();
-        transactionEntity.setId(transactionId);
-        transactionEntity.setAmount(BigDecimal.valueOf(1000));
-    }
 
     @Test
     void getTransactionById_ShouldReturnTransaction_WhenTransactionExists() {
+        UUID transactionId = DataUtils.getTransactionId();
+        TransactionEntity transactionEntity = DataUtils.getTransactionEntity();
+        TransactionResponse transactionResponse = new TransactionResponse();
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transactionEntity));
         when(modelMapper.map(transactionEntity, TransactionResponse.class)).thenReturn(transactionResponse);
 
@@ -74,6 +51,7 @@ public class TransactionServiceImplTest {
 
     @Test
     void getTransactionById_ShouldThrowNotFoundException_WhenTransactionDoesNotExist() {
+        UUID transactionId = DataUtils.getTransactionId();
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> transactionService.getTransactionById(transactionId));
@@ -83,6 +61,9 @@ public class TransactionServiceImplTest {
 
     @Test
     void getAccountTransactions_ShouldReturnTransactions_WhenTransactionsExist() {
+        TransactionEntity transactionEntity = DataUtils.getTransactionEntity();
+        UUID accountId = DataUtils.getAccountId();
+        TransactionResponse transactionResponse = DataUtils.getTransactionResponse();
         List<TransactionEntity> transactionEntities = new ArrayList<>();
         transactionEntities.add(transactionEntity);
 
@@ -100,6 +81,9 @@ public class TransactionServiceImplTest {
 
     @Test
     void createTransaction_ShouldCreateTransaction() {
+        TransactionEntity transactionEntity = DataUtils.getTransactionEntity();
+        TransactionResponse transactionResponse = DataUtils.getTransactionResponse();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(modelMapper.map(any(TransactionRequest.class), eq(TransactionEntity.class))).thenReturn(transactionEntity);
         when(modelMapper.map(any(TransactionEntity.class), eq(TransactionResponse.class))).thenReturn(transactionResponse);

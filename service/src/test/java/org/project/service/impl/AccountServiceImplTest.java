@@ -3,6 +3,7 @@ package org.project.service.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,17 +12,16 @@ import org.project.dto.request.AccountRequest;
 import org.project.dto.request.TransactionRequest;
 import org.project.dto.response.AccountListResponse;
 import org.project.dto.response.AccountResponse;
-import org.project.dto.response.UserResponse;
 import org.project.exception.NotFoundException;
 import org.project.exception.TransactionException;
 import org.project.model.AccountEntity;
 import org.project.model.TransactionEntity;
 import org.project.model.UserEntity;
 import org.project.model.enums.Currency;
-import org.project.model.enums.DocumentType;
 import org.project.repository.AccountRepository;
 import org.project.repository.TransactionRepository;
 import org.project.repository.UserRepository;
+import org.project.util.DataUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,68 +43,17 @@ public class AccountServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @InjectMocks
     private AccountServiceImpl accountService;
 
-    private UUID userId;
-    private UUID accountId;
-    private UserEntity userEntity;
-    private UserResponse userResponse;
-    private AccountRequest accountRequest;
-    private AccountResponse accountResponse;
-    private TransactionRequest transactionRequest;
-    private AccountEntity accountEntity;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        accountService = new AccountServiceImpl(accountRepository, userRepository, transactionRepository, modelMapper);
-
-        this.userId = UUID.randomUUID();
-        this.accountId = UUID.randomUUID();
-
-        this.userEntity = UserEntity.builder()
-                .id(userId)
-                .name("Test User")
-                .docNumber("AB112233")
-                .docType(DocumentType.PASSPORT)
-                .build();
-
-        this.userResponse = UserResponse.builder()
-                .id(userId)
-                .name("Test User")
-                .docNumber("AB112233")
-                .docType(DocumentType.PASSPORT)
-                .build();
-
-        this.accountRequest = AccountRequest.builder()
-                .userId(userId)
-                .balance(BigDecimal.valueOf(1000))
-                .currency(Currency.USD)
-                .build();
-
-        this.accountResponse = AccountResponse.builder()
-                .id(accountId)
-                .user(userResponse)
-                .balance(BigDecimal.valueOf(1000))
-                .currency(Currency.USD)
-                .build();
-
-        this.transactionRequest = TransactionRequest.builder()
-                .accountId(accountId)
-                .amount(BigDecimal.valueOf(500))
-                .build();
-
-        this.accountEntity = AccountEntity.builder()
-                .id(accountId)
-                .user(userEntity)
-                .balance(BigDecimal.valueOf(1000))
-                .currency(Currency.USD)
-                .build();
-    }
 
     @Test
     void getUserAccounts_ShouldReturnUserAccounts_WhenUserExists() {
         List<AccountEntity> accountEntities = new ArrayList<>();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        UserEntity userEntity = DataUtils.getUserEntity();
+        UUID userId = UUID.randomUUID();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
         accountEntities.add(accountEntity);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
@@ -123,6 +72,7 @@ public class AccountServiceImplTest {
 
     @Test
     void getUserAccounts_ShouldThrowNotFoundException_WhenUserDoesNotExist() {
+        UUID userId = DataUtils.getUserId();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.getUserAccounts(userId));
@@ -133,6 +83,9 @@ public class AccountServiceImplTest {
 
     @Test
     void getAccountById_ShouldReturnAccount_WhenAccountExists() {
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         when(modelMapper.map(accountEntity, AccountResponse.class)).thenReturn(accountResponse);
 
@@ -146,6 +99,7 @@ public class AccountServiceImplTest {
 
     @Test
     void getAccountById_ShouldThrowNotFoundException_WhenAccountDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.getAccountById(accountId));
@@ -155,6 +109,10 @@ public class AccountServiceImplTest {
 
     @Test
     void createAccount_ShouldCreateAccount_WhenUserExists() {
+        UUID userId = DataUtils.getUserId();
+        UserEntity userEntity = DataUtils.getUserEntity();
+        AccountRequest accountRequest = DataUtils.getAccountRequest();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(accountRepository.save(any(AccountEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -173,6 +131,8 @@ public class AccountServiceImplTest {
 
     @Test
     void createAccount_ShouldThrowNotFoundException_WhenUserDoesNotExist() {
+        UUID userId = DataUtils.getUserId();
+        AccountRequest accountRequest = DataUtils.getAccountRequest();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.createAccount(accountRequest));
@@ -184,6 +144,10 @@ public class AccountServiceImplTest {
 
     @Test
     void deposit_ShouldDepositAmount_WhenAccountExists() {
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         when(transactionRepository.save(any(TransactionEntity.class))).thenReturn(new TransactionEntity());
         when(modelMapper.map(accountEntity, AccountResponse.class)).thenReturn(accountResponse);
@@ -200,6 +164,8 @@ public class AccountServiceImplTest {
 
     @Test
     void deposit_ShouldThrowNotFoundException_WhenAccountDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.deposit(transactionRequest));
@@ -211,6 +177,10 @@ public class AccountServiceImplTest {
 
     @Test
     void withdraw_ShouldWithdrawAmount_WhenAccountExistsAndBalanceIsSufficient() {
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         when(transactionRepository.save(any(TransactionEntity.class))).thenReturn(new TransactionEntity());
         when(modelMapper.map(accountEntity, AccountResponse.class)).thenReturn(accountResponse);
@@ -227,6 +197,8 @@ public class AccountServiceImplTest {
 
     @Test
     void withdraw_ShouldThrowNotFoundException_WhenAccountDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.withdraw(transactionRequest));
@@ -238,6 +210,9 @@ public class AccountServiceImplTest {
 
     @Test
     void withdraw_ShouldThrowTransactionException_WhenBalanceIsInsufficient() {
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        UUID accountId = DataUtils.getAccountId();
         BigDecimal withdrawAmount = BigDecimal.valueOf(1500);
         transactionRequest.setAmount(withdrawAmount);
         accountEntity.setBalance(BigDecimal.valueOf(1000));
@@ -253,6 +228,11 @@ public class AccountServiceImplTest {
 
     @Test
     void transfer_ShouldTransferAmount_WhenBothAccountsExistAndBalanceIsSufficient() {
+        UUID accountId = DataUtils.getAccountId();
+        UserEntity userEntity = DataUtils.getUserEntity();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        AccountResponse accountResponse = DataUtils.getAccountResponse();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         UUID accountIdTo = UUID.randomUUID();
         AccountEntity accountTo = AccountEntity.builder()
                 .id(accountIdTo)
@@ -260,8 +240,6 @@ public class AccountServiceImplTest {
                 .balance(BigDecimal.valueOf(2000))
                 .currency(Currency.USD)
                 .build();
-
-        BigDecimal transferAmount = BigDecimal.valueOf(500);
 
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         when(accountRepository.findById(accountIdTo)).thenReturn(Optional.of(accountTo));
@@ -274,13 +252,17 @@ public class AccountServiceImplTest {
         assertEquals(accountResponse, result);
 
         verify(accountRepository, times(1)).findById(accountIdTo);
-        verify(accountRepository, times(1)).updateAccountBalance(accountId, transferAmount);
-        verify(accountRepository, times(1)).updateAccountBalance(accountIdTo, transferAmount.negate());
+        verify(accountRepository, times(1))
+                .updateAccountBalance(accountId, transactionRequest.getAmount());
+        verify(accountRepository, times(1))
+                .updateAccountBalance(accountIdTo, transactionRequest.getAmount().negate());
         verify(transactionRepository, times(1)).saveAll(anyList());
     }
 
     @Test
     void transfer_ShouldThrowNotFoundException_WhenAccountFromDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         UUID accountIdTo = UUID.randomUUID();
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
@@ -294,6 +276,9 @@ public class AccountServiceImplTest {
 
     @Test
     void transfer_ShouldThrowNotFoundException_WhenAccountToDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
         UUID accountIdTo = UUID.randomUUID();
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
         when(accountRepository.findById(accountIdTo)).thenReturn(Optional.empty());
@@ -308,6 +293,10 @@ public class AccountServiceImplTest {
 
     @Test
     void transfer_ShouldThrowTransactionException_WhenBalanceIsInsufficient() {
+        UserEntity userEntity = DataUtils.getUserEntity();
+        TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
         UUID accountIdTo = UUID.randomUUID();
         AccountEntity accountTo = AccountEntity.builder()
                 .id(accountIdTo)
@@ -332,18 +321,20 @@ public class AccountServiceImplTest {
 
     @Test
     void deleteAccount_ShouldDeleteAccount_WhenAccountExists() {
+        UUID accountId = DataUtils.getAccountId();
+        AccountEntity accountEntity = DataUtils.getAccountEntity();
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(accountEntity));
-        doNothing().when(accountRepository).deleteById(accountId);
 
         accountService.closeAccount(accountId);
 
-        verify(accountRepository).delete(accountEntity);
+        verify(accountRepository).deleteById(accountId);
         verify(accountRepository, times(1)).findById(accountId);
         verify(accountRepository, times(1)).deleteById(accountId);
     }
 
     @Test
     void deleteAccount_ShouldThrowNotFoundException_WhenAccountDoesNotExist() {
+        UUID accountId = DataUtils.getAccountId();
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> accountService.closeAccount(accountId));
