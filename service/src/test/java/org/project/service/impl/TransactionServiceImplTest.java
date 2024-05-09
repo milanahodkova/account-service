@@ -32,7 +32,6 @@ public class TransactionServiceImplTest {
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
-
     @Test
     void getTransactionById_ShouldReturnTransaction_WhenTransactionExists() {
         UUID transactionId = DataUtils.getTransactionId();
@@ -84,9 +83,12 @@ public class TransactionServiceImplTest {
         TransactionEntity transactionEntity = DataUtils.getTransactionEntity();
         TransactionResponse transactionResponse = DataUtils.getTransactionResponse();
         TransactionRequest transactionRequest = DataUtils.getTransactionRequest();
-        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(modelMapper.map(any(TransactionRequest.class), eq(TransactionEntity.class))).thenReturn(transactionEntity);
-        when(modelMapper.map(any(TransactionEntity.class), eq(TransactionResponse.class))).thenReturn(transactionResponse);
+        when(transactionRepository.save(any(TransactionEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(modelMapper.map(any(TransactionRequest.class), eq(TransactionEntity.class)))
+                .thenReturn(transactionEntity);
+        when(modelMapper.map(any(TransactionEntity.class), eq(TransactionResponse.class)))
+                .thenReturn(transactionResponse);
 
         TransactionResponse result = transactionService.createTransaction(transactionRequest);
 

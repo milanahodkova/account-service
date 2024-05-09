@@ -62,7 +62,8 @@ class UserServiceImplTest {
         UserRequest userRequest = DataUtils.getUserRequest();
         UserEntity userEntity = DataUtils.getUserEntity();
         UserResponse userResponse = DataUtils.getUserResponse();
-        when(userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber())).thenReturn(false);
+        when(userRepository.existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber()))
+                .thenReturn(false);
         when(modelMapper.map(userRequest, UserEntity.class)).thenReturn(userEntity);
         when(userRepository.save(userEntity)).thenReturn(userEntity);
         when(modelMapper.map(userEntity, UserResponse.class)).thenReturn(userResponse);
@@ -72,7 +73,8 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertEquals(userResponse, result);
 
-        verify(userRepository, times(1)).existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber());
+        verify(userRepository, times(1))
+                .existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber());
         verify(userRepository, times(1)).save(userEntity);
     }
 
@@ -84,7 +86,8 @@ class UserServiceImplTest {
 
         assertThrows(AlreadyExistsException.class, () -> userService.create(userRequest));
 
-        verify(userRepository, times(1)).existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber());
+        verify(userRepository, times(1))
+                .existsByDocTypeAndDocNumber(userRequest.getDocType(), userRequest.getDocNumber());
         verify(userRepository, never()).save(any(UserEntity.class));
     }
 

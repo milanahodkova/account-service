@@ -46,7 +46,6 @@ public class AccountServiceImplTest {
     @InjectMocks
     private AccountServiceImpl accountService;
 
-
     @Test
     void getUserAccounts_ShouldReturnUserAccounts_WhenUserExists() {
         List<AccountEntity> accountEntities = new ArrayList<>();
@@ -114,8 +113,10 @@ public class AccountServiceImplTest {
         AccountRequest accountRequest = DataUtils.getAccountRequest();
         AccountResponse accountResponse = DataUtils.getAccountResponse();
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
-        when(accountRepository.save(any(AccountEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(accountRepository.save(any(AccountEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(transactionRepository.save(any(TransactionEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         when(modelMapper.map(any(AccountEntity.class), eq(AccountResponse.class))).thenReturn(accountResponse);
 
         AccountResponse result = accountService.createAccount(accountRequest);
