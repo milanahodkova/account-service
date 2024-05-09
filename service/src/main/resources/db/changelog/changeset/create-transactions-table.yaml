@@ -5,6 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: transactions
+            schemaName: app
             columns:
               - column:
                   name: id
@@ -17,6 +18,7 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: false
+                    referencedTableSchemaName: app
                     foreignKeyName: accounts_account_id_fk
                     referencedTableName: accounts
                     referencedColumnNames: id

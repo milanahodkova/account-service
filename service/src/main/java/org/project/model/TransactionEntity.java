@@ -15,20 +15,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "transactions")
+@Table(name = "transactions", schema = "app")
 public class TransactionEntity {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private AccountEntity account;
-    @Column(name = "amount", precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal amount;
-    @Column(name = "timestamp")
     private LocalDateTime timestamp;
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type")
     private TransactionType transactionType;
 }
