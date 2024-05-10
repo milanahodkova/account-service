@@ -16,6 +16,7 @@ import org.project.repository.TransactionRepository;
 import org.project.repository.UserRepository;
 import org.project.service.AccountService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -72,12 +73,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AccountResponse deposit(TransactionRequest transactionRequest) {
         AccountEntity account = findAccountByIdOrThrow(transactionRequest.getAccountId());
         BigDecimal depositAmount = transactionRequest.getAmount();
-
-        accountRepository.updateAccountBalance(account.getId(), depositAmount.negate());
 
         TransactionEntity transaction = createTransactionEntity(
                 account,
@@ -91,7 +90,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AccountResponse withdraw(TransactionRequest transactionRequest) {
         AccountEntity account = findAccountByIdOrThrow(transactionRequest.getAccountId());
         BigDecimal withdrawAmount = transactionRequest.getAmount();
@@ -100,8 +99,6 @@ public class AccountServiceImpl implements AccountService {
         if (currentBalance.compareTo(withdrawAmount) < 0) {
             throw new TransactionException("Insufficient balance for this operation");
         }
-
-        accountRepository.updateAccountBalance(account.getId(), withdrawAmount);
 
         TransactionEntity transaction = createTransactionEntity(
                 account,
@@ -116,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AccountResponse transfer(UUID accountIdTo, TransactionRequest transactionRequest) {
         AccountEntity accountFrom = findAccountByIdOrThrow(transactionRequest.getAccountId());
         AccountEntity accountTo = findAccountByIdOrThrow(accountIdTo);
@@ -125,9 +122,6 @@ public class AccountServiceImpl implements AccountService {
 
         checkCurrency(accountFrom.getCurrency(), accountTo.getCurrency());
         checkBalance(accountFrom.getBalance(), transferAmount);
-
-        accountRepository.updateAccountBalance(accountFrom.getId(), transferAmount);
-        accountRepository.updateAccountBalance(accountTo.getId(), transferAmount.negate());
 
         TransactionEntity transactionFrom = createTransactionEntity(
                 accountFrom,
