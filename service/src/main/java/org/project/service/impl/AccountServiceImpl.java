@@ -78,6 +78,8 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity account = findAccountByIdOrThrow(transactionRequest.getAccountId());
         BigDecimal depositAmount = transactionRequest.getAmount();
 
+        accountRepository.updateAccountBalance(account.getId(), depositAmount.negate());
+
         TransactionEntity transaction = createTransactionEntity(
                 account,
                 TransactionType.DEPOSIT,
@@ -99,6 +101,8 @@ public class AccountServiceImpl implements AccountService {
         if (currentBalance.compareTo(withdrawAmount) < 0) {
             throw new TransactionException("Insufficient balance for this operation");
         }
+
+        accountRepository.updateAccountBalance(account.getId(), withdrawAmount);
 
         TransactionEntity transaction = createTransactionEntity(
                 account,
@@ -122,6 +126,9 @@ public class AccountServiceImpl implements AccountService {
 
         checkCurrency(accountFrom.getCurrency(), accountTo.getCurrency());
         checkBalance(accountFrom.getBalance(), transferAmount);
+
+        accountRepository.updateAccountBalance(accountFrom.getId(), transferAmount);
+        accountRepository.updateAccountBalance(accountTo.getId(), transferAmount.negate());
 
         TransactionEntity transactionFrom = createTransactionEntity(
                 accountFrom,
